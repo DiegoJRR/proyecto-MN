@@ -9,11 +9,6 @@ A*solution
 function sol = solve_with_gauss(A, b)
     b = b';
     
-    if determinant(A) == false
-        sol = false;
-        return
-    end
-    
     aug = augment(A, b);
     [n_b, m_b] = size(b);
     A = ref(aug, m_b);
