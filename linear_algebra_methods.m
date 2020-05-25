@@ -1,9 +1,6 @@
-A = rand(3)
-
+A = rand(3);
 b = [4, 8, 12];
-
 solution = solve_with_gauss(A, b)
-
 A*solution
 
 function sol = solve_with_gauss(A, b)
@@ -15,7 +12,7 @@ function sol = solve_with_gauss(A, b)
     end
     
     aug = augment(A, b);
-    [n_b, m_b] = size(b);
+    [~, m_b] = size(b);
     A = ref(aug, m_b);
     
     sol = solve_ref(A);
@@ -29,7 +26,7 @@ end
 
 
 function sol = reduce_ref(A)
-    [n, m] = size(A);
+    [n, ~] = size(A);
     
    for row = 1:n
        row_n = A(row, :);
@@ -47,6 +44,7 @@ function det = determinant(A)
     
     if n ~= m
         det = false;
+        return
     end
     
     A = ref(A, 0);
@@ -68,7 +66,8 @@ function det = determinant(A)
         end
     end
     
-    det = determinant_value
+    det = determinant_value;
+    return
 end
 
 function sol = ref(A, b_cols)
@@ -84,7 +83,7 @@ function sol = ref(A, b_cols)
                
               if A == 0
                  sol = false;
-                 break
+                 return
               end
               
               A = make_pivot_column(A, row, col);
@@ -100,6 +99,7 @@ function sol = solve_ref(A)
     
     if n ~= m-1
         sol = false;
+        return
     end
     
     b = A(:, m);
@@ -119,9 +119,10 @@ function x = make_pivot_column(A, i, j)
     
     if A == false
         x = false;
+        return
     end
     
-    [n, m] = size(A);
+    [n, ~] = size(A);
         
     for row = i+1:n
        A(row, :) = A(row, :) - (A(row, j)/A(i, j))*A(i, :);
@@ -135,11 +136,12 @@ function x = ensure_pivot(A, i, j)
     if A(i, j) ~= 0
         x = A;
     else
-        [n, m] = size(A);
+        [n, ~] = size(A);
         
         for row = i+1:n
             if A(row, j) ~= 0
                 x = exchange_rows(A, j, row);
+                return
             end
         end
         
