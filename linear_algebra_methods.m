@@ -1,5 +1,5 @@
 A = rand(3);
-b = [4, 12, 8];
+b = [4, 500, 8];
 solution = solve_with_gauss(A, b);
 A*solution
 
@@ -64,11 +64,8 @@ end
 function sol = reduce_ref(A)
     [n, ~] = size(A);
     
-   for row = 1:n
-       row_n = A(row, :);
-       m_pivot = find(row_n, 1, 'first');
-       
-       A(row, :) = A(row, :)/A(row, m_pivot);
+   for row = 1:n       
+       A(row, :) = A(row, :)/A(row, row);
    end
     
     sol = A;
