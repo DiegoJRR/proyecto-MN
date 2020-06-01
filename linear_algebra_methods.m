@@ -1,7 +1,11 @@
 A = rand(3);
-b = [4, 8, 12];
-solution = solve_with_gauss(A, b)
+b = [4, 12, 8];
+solution = solve_with_gauss(A, b);
 A*solution
+
+sol = solve_with_inverse(A, b);
+A*sol
+
 
 function sol = solve_with_gauss(A, b)
     b = b';
@@ -12,10 +16,27 @@ function sol = solve_with_gauss(A, b)
     end
     
     aug = augment(A, b);
-    [~, m_b] = size(b);
-    A = ref(aug, m_b);
+    A = make_upper(aug);
     
     sol = solve_ref(A);
+end
+
+function sol = solve_with_inverse(A, b)
+    if determinant(A) == false
+        sol = false;
+        return
+    end
+    
+    [n, ~] = size(A);
+    
+    aug = augment(A, eye(n));
+    U = make_upper(aug);
+    ident_aug = make_ident(U);
+    
+    ident_aug = reduce_ref(ident_aug);
+    inverse = ident_aug(:, n+1:n+n);
+    
+    sol = inverse*b';
 end
 
 function aug = augment(A, b)
@@ -24,6 +45,21 @@ function aug = augment(A, b)
    aug = A;
 end
 
+function sol = make_ident(A)
+    % Esta función toma como input una matriz aumentada con el lado
+    % izquierdo en forma superior, y lo convierte a la identidad
+    [n, ~] = size(A);
+    
+    for row_reverse = n:-1:2
+       for row = 1:row_reverse-1
+           A(row, :) = A(row, :) - (A(row, row_reverse)/A(row_reverse, row_reverse))*A(row_reverse, :);
+       end
+    end
+    
+
+    sol = A;
+    
+end
 
 function sol = reduce_ref(A)
     [n, ~] = size(A);
@@ -47,7 +83,7 @@ function det = determinant(A)
         return
     end
     
-    A = ref(A, 0);
+    A = make_upper(A);
 
     
     if A == false
@@ -70,12 +106,12 @@ function det = determinant(A)
     return
 end
 
-function sol = ref(A, b_cols)
+function sol = make_upper(A)
     % Convierte a forma fila-escalon una matrix
     % m_limit es la ultima columna antes de que comience la parte aumentada
    [n, m] = size(A);
    
-   m = m - b_cols;
+   m = n;
    % Asegurar que la fila 1 tiene valor diferente de 0
    for row = 1:n
        for col = 1:m
