@@ -1,19 +1,84 @@
 A = rand(3);
 b = [4, 500, 8];
-solution = solve_with_gauss(A, b);
-A*solution
 
-sol = solve_with_inverse(A, b);
-A*sol
+x = solve_with_gauss(A, b);
+A*x
 
-sol = solve_with_gauss_jordan(A, b);
-A*sol
+x = solve_with_inverse(A, b);
+A*x
 
-function sol = solve_with_gauss_jordan(A, b)
+x = solve_with_gauss_jordan(A, b);
+A*x
+
+x = solve_with_LU(A, b);
+A*x
+
+x = solve_with_cramer(A, b);
+A*x
+
+function x = solve_with_cramer(A, b)
+    [n, ~] = size(A);
+    det_A = determinant(A);
+    
+    if det_A == false || det_A == 0
+        x = false;
+        return
+    end
+    
+    x = zeros(n, 1);
+    
+    for i = 1:n
+       aux = A;
+       aux(:, i) = b;
+       
+       x(i) = determinant(aux)/det_A;
+    end
+end
+
+function x = solve_with_LU(A, b)
+    n = length(b);
+    x = zeros(n, 1);
+    y = zeros(n, 1);
+
+    for i = 1:1:n
+        for j = 1:1:(i - 1)
+            a = A(i,j);
+            for k = 1:1:(j - 1)
+                a = a - A(i,k)*A(k,j);
+            end
+            A(i,j) = a/A(j,j);
+        end
+        for j = i:1:n
+            a = A(i,j);
+            for k = 1:1:(i - 1)
+                a = a - A(i,k)*A(k,j);
+            end
+            A(i,j) = a;
+        end
+    end
+
+    for i = 1:1:n
+        a = 0;
+        for k = 1:1:i
+            a = a + A(i,k)*y(k);
+        end
+        y(i) = b(i) - a;
+    end
+
+    for i = n:(-1):1
+        a = 0;
+        for k = (i + 1):1:n
+            a = a + A(i,k)*x(k);
+        end
+        x(i) = (y(i) - a)/A(i, i);
+    end    
+end
+
+function x = solve_with_gauss_jordan(A, b)
     b = b';
     
     if determinant(A) == false
-        sol = false;
+        x = false;
         return
     end
     
@@ -23,26 +88,26 @@ function sol = solve_with_gauss_jordan(A, b)
     ident_aug = make_ident(U);
     ident_aug = reduce_ref(ident_aug);
     
-    sol = ident_aug(:, end);
+    x = ident_aug(:, end);
 end
 
-function sol = solve_with_gauss(A, b)
+function x = solve_with_gauss(A, b)
     b = b';
     
     if determinant(A) == false
-        sol = false;
+        x = false;
         return
     end
     
     aug = augment(A, b);
     A = make_upper(aug);
     
-    sol = solve_ref(A);
+    x = solve_ref(A);
 end
 
-function sol = solve_with_inverse(A, b)
+function x = solve_with_inverse(A, b)
     if determinant(A) == false
-        sol = false;
+        x = false;
         return
     end
     
@@ -55,7 +120,7 @@ function sol = solve_with_inverse(A, b)
     ident_aug = reduce_ref(ident_aug);
     inverse = ident_aug(:, n+1:n+n);
     
-    sol = inverse*b';
+    x = inverse*b';
 end
 
 function aug = augment(A, b)
