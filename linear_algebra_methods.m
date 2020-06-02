@@ -6,6 +6,25 @@ A*solution
 sol = solve_with_inverse(A, b);
 A*sol
 
+sol = solve_with_gauss_jordan(A, b);
+A*sol
+
+function sol = solve_with_gauss_jordan(A, b)
+    b = b';
+    
+    if determinant(A) == false
+        sol = false;
+        return
+    end
+    
+    aug = augment(A, b);
+    U = make_upper(aug);
+    
+    ident_aug = make_ident(U);
+    ident_aug = reduce_ref(ident_aug);
+    
+    sol = ident_aug(:, end);
+end
 
 function sol = solve_with_gauss(A, b)
     b = b';
@@ -51,14 +70,12 @@ function sol = make_ident(A)
     [n, ~] = size(A);
     
     for row_reverse = n:-1:2
-       for row = 1:row_reverse-1
+       for row = 1:row_reverse - 1
            A(row, :) = A(row, :) - (A(row, row_reverse)/A(row_reverse, row_reverse))*A(row_reverse, :);
        end
     end
     
-
     sol = A;
-    
 end
 
 function sol = reduce_ref(A)
@@ -106,12 +123,11 @@ end
 function sol = make_upper(A)
     % Convierte a forma fila-escalon una matrix
     % m_limit es la ultima columna antes de que comience la parte aumentada
-   [n, m] = size(A);
+   [n, ~] = size(A);
    
-   m = n;
    % Asegurar que la fila 1 tiene valor diferente de 0
    for row = 1:n
-       for col = 1:m
+       for col = 1:n
            if row == col
                
               if A == 0
