@@ -1,20 +1,111 @@
-A = rand(3);
-b = [4, 500, 8];
+A = [3 -2 1 ; 1 -3 2 ; -1 2 4]
+b = [4, 50, 8];
 
 x = solve_with_gauss(A, b);
 A*x
 
-x = solve_with_inverse(A, b);
+x = solve_with_gauss_seidel(A, b, 0.05);
 A*x
 
-x = solve_with_gauss_jordan(A, b);
-A*x
+syms x
+f(x) = str2sym('x + 3');
 
-x = solve_with_LU(A, b);
-A*x
+solve_with_bisection(f, 10, -5, 0.05)
 
-x = solve_with_cramer(A, b);
-A*x
+function x = solve_with_bisection(f, x_l, x_u, threshold)  
+    if f(x_l)*f(x_u) > 0
+        disp("Los valores iniciales deben tener signos distintos")
+        x = false
+        return
+    end
+    
+    % Define a vector with x_r(i) being the old approximation
+    x_r = zeros(2, 1);
+    
+    error = 1;
+    
+    while error > threshold
+        x_r(1) = x_r(2);
+        x_r(2) = (x_l + x_u)/2;
+        
+        error = abs((x_r(2) - x_r(1))/x_r(2));
+        product = f(x_l)*f(x_r(2));
+        
+        if product < 0
+            x_u = x_r(2);
+            continue
+        elseif product > 0
+            x_l = x_r(2);
+            continue
+        else
+            x = x_r(2);
+            return
+        end
+        
+        
+    end
+    
+    x = x_r(2);
+end
+
+function sol = solve_with_gauss_seidel(A, b, threshold)
+    [n, ~] = size(A);
+    
+    if ~check_diagonally_dominant(A)
+        disp("No se puede resolver con este metodo porque la matriz no es diagonalmente dominante")
+        sol = false
+        return
+    end
+    
+    x = zeros(n, 1);
+    errors = zeros(n, 1);
+    
+    for i = 1:n
+        errors(i) = 100;
+    end
+    
+    while sum(errors < threshold) ~= n
+        for i = 1:n
+            aux = x;
+            x_last = aux(i);
+            aux(i) = 0;
+            
+            % Update x_i value 
+            x(i) = (b(i) - dot(aux, A(i, 1:n)))/A(i, i);
+           
+            % Update errors_i value
+            errors(i) = abs((x(i) - x_last)/x(i))*100;
+        end
+        
+    end
+    
+    sol = x;
+end
+
+function x = check_diagonally_dominant(A)
+    [n, ~] = size(A);
+    
+    for row = 1:n
+       if abs(A(row, row)) >= sum_abs(A(row, :)) - abs(A(row, row))
+           continue
+       else
+           x = false;
+           return
+       end
+    end
+    
+    x = true;
+end
+
+function x = sum_abs(v)
+    s = 0
+    for i = 1:size(v)
+        s = s + abs(v(i));
+    end
+    
+    x = s;
+end
+
 
 function x = solve_with_cramer(A, b)
     [n, ~] = size(A);
