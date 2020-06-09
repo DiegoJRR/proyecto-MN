@@ -1,16 +1,235 @@
-A = [3 -2 1 ; 1 -3 2 ; -1 2 4]
-b = [4, 50, 8];
+%{
+Proyecto final de Métodos Numericos, semestre Febrero - Junio 2020 
+
+Profesor: Jorge Islas
+Integrantes:
+    * Diego de Jesús Ramírez Rodríguez 
+    * Alejandra Velázquez Mendoza
+
+repo: https://github.com/DiegoJRR/proyecto-MN
+
+Escrito durante la 'Plaga de los 20'
+
+Última revisión: 08/22/20
+%}
+
+
+% Introducción
+disp("Este es el proyecto de métodos numericos de Diego Ramírez y Alejandra Velázquez")
+disp_with_space("El proyecto contiene métodos para reslvoer sistemas lineales de ecuaciones y funciones de una variable")
+
+disp("Para comenzar, ingrese una matriz válida para los métodos de solución de sistemas lineaes")
+disp("Para el mejor resultado posible, ingrese una matriz diagonalmente dominante")
+response = input("Si quiere utilizar la matriz default (y/n)", 's');
+
+if response == "y"
+    A = [3 2 1 -2 -6; 1 5 2 1 -1; 2 1 6 1 -5 ; ];
+    
+    
+end
+
+
+disp("Debe estar en notación de MATLAB: ´[fila_1 ; fila_2 ; ... ; fila_n]´ donde las filas se escriben de forma: 'a_1 a_2 a_3' con los valores separados por espacios")
+
+A = input("Ingrese la matriz cuadrada con el formato indicado: ")
+[n, m] = size(A);
+
+while isempty(A) || n ~= m
+    disp("Para comenzar, ingrese una matriz válida para los métodos de solución de sistemas lineaes")
+    disp("Debe estar en notación de MATLAB: ´[fila_1 ; fila_2 ; ... ; fila_n]´ donde las filas se escriben de forma: 'a_1 a_2 a_3' con los valores separados por espacios")
+
+    A = input("Ingrese la matriz con el formato indicado: ")
+    [n, m] = size(A);
+end
+
+disp(" ")
+
+disp("Ingrese ahora un vector que quiere utilizar como la solución del sistema A*x")
+disp("El formato para los vectores es: '[a_1 a_2 ... a_n]', asegurese que tiene el mismo número de filas que la matriz cuadrada")
+
+b = input("Ingrese el vector con el formato indicado: ")
+[n_b, m_b] = size(b);
+
+while isempty(b) || m_b ~= n || n_b ~= 1
+    disp("Ingrese ahora un vector que quiere utilizar como la solución del sistema A*x")
+    disp("El formato para los vectores es: '[a_1 a_2 ... a_n]', asegurese que tiene el mismo número de filas que la matriz cuadrada")
+
+    b = input("Ingrese el vector con el formato indicado: ")
+    [n_b, m_b] = size(b);
+end
+
+
+
+disp(" ")
+
+% Sección con métodos matriciales
+disp_with_space("Los siguientes son los métodos matriciales para resolver sistemas de ecuaciones, utilizando la matriz dada arriba")
+
+disp("El primero es el método de Gauss, utilizando la matriz")
+disp(A)
+disp("Y el vector b")
+disp(b)
+
+input("ENTER para continuar")
 
 x = solve_with_gauss(A, b);
-A*x
 
-x = solve_with_gauss_seidel(A, b, 0.05);
-A*x
+disp("Obtenemos el resultado: ")
+disp_with_space(x)
+
+disp("Y multiplicando A*x vemos que obtenemos b de nuevo")
+disp_with_space(A*x)
+
+
+%  Solución con método de Cramer
+disp("El siguiente es el método de Cramer, utilizando la matriz")
+disp(A)
+disp("Y el vector b")
+disp(b)
+
+input("ENTER para continuar")
+
+x = solve_with_cramer(A, b);
+
+disp("Obtenemos el resultado: ")
+disp_with_space(x)
+
+disp("Y multiplicando A*x vemos que obtenemos b de nuevo")
+disp_with_space(A*x)
+
+
+%  Solución con método de Gauss Jordan
+disp("El siguiente es el método de Gauss Jordan, utilizando la matriz")
+disp(A)
+disp("Y el vector b")
+disp(b)
+
+input("ENTER para continuar")
+
+x = solve_with_gauss_jordan(A, b);
+
+disp("Obtenemos el resultado: ")
+disp_with_space(x)
+
+disp("Y multiplicando A*x vemos que obtenemos b de nuevo")
+disp_with_space(A*x)
+
+
+
+%  Solución con método de Matriz Inversa
+disp("El siguiente es el método de Matriz Inversa, utilizando la matriz")
+disp(A)
+disp("Y el vector b")
+disp(b)
+
+input("ENTER para continuar")
+
+x = solve_with_inverse(A, b);
+
+disp("Obtenemos el resultado: ")
+disp_with_space(x)
+
+disp("Y multiplicando A*x vemos que obtenemos b de nuevo")
+disp_with_space(A*x)
+
+
+%  Solución con método de LU
+disp("El siguiente es el método de LU, utilizando la matriz")
+disp(A)
+disp("Y el vector b")
+disp(b)
+
+input("ENTER para continuar")
+
+x = solve_with_LU(A, b);
+
+disp("Obtenemos el resultado: ")
+disp_with_space(x)
+
+disp("Y multiplicando A*x vemos que obtenemos b de nuevo")
+disp_with_space(A*x)
+
+
+%  Solución con método de Guass Seidel
+disp("El siguiente es el método de Gauss Seidel, utilizando la matriz")
+disp(A)
+disp("Y el vector b")
+disp(b)
+
+input("ENTER para continuar")
+
+x = solve_with_gauss_seidel(A, b);
+
+disp("Obtenemos el resultado: ")
+disp_with_space(x)
+
+disp("Y multiplicando A*x vemos que obtenemos b de nuevo")
+disp_with_space(A*x)
+
+% Sección de métodos numericos para funciones univariables
+
+disp("Los siguientes métodos numericos encuentran las raices de funciones univariables constantes")
+disp("Ingrese una función matemática con la notación de MATLAB")
 
 syms x
-f(x) = str2sym('x + 3')
+f(x) = str2sym(input("Ingrese una función univarible de x: ", 's'))
+threshold = input("Ingrese un valor máximo del error deseado (porcentual): ")/100;
 
-solve_with_bisection(f, 10, -5, 0.05)
+disp(" ")
+disp(" ")
+
+% Solución con método de Bisección
+disp_with_space("Solución con el método de Bisección")
+
+x_l = input("Ingrese el valor de x_l para el método: ");
+x_u = input("Ingrese el valor de x_u para el método: ");
+
+x = solve_with_bisection(f, x_l, x_u, threshold);
+
+disp("Obtenemos entonces la solución")
+disp(x)
+disp("Que corresponde a un valor de f")
+disp_with_space(f(x))
+
+
+% Solución con método de Newton - Raphson
+disp_with_space("Solución con el método de Newton - Raphson")
+
+x_0 = input("Ingrese el valor de x_0 para el método: ");
+
+x = solve_with_newton_rapshon(f, x_0, threshold);
+
+disp("Obtenemos entonces la solución")
+disp(x)
+disp("Que corresponde a un valor de f")
+disp_with_space(f(x))
+
+
+function disp_with_space(text)
+    disp(text)
+    input("ENTER para continuar")
+    disp(" ")
+    disp(" ")
+end
+
+function x = solve_with_newton_rapshon(f, x_0, threshold)
+    x_approx = zeros(2, 1);
+    x_approx(1) = x_0;
+    df = diff(f);
+    
+    error = 1;
+    
+    while error > threshold
+        temp = x_approx(2);
+        x_approx(2) = x_approx(1) - f(x_approx(1))/df(x_approx(1));
+        
+        x_approx(1) = temp;
+        
+        error = abs((x_approx(2) - x_approx(1))/x_approx(2));
+    end
+    
+    x = x_approx(2);
+end
 
 function x = solve_with_bisection(f, x_l, x_u, threshold)  
     if f(x_l)*f(x_u) > 0
@@ -20,28 +239,32 @@ function x = solve_with_bisection(f, x_l, x_u, threshold)
     end
     
     % Define a vector with x_r(i) being the old approximation
-    x_r = zeros(2, 1)
+    x_r = zeros(2, 1);
     
     error = 1;
     
     while error > threshold
+        x_r(1) = x_r(2);
         x_r(2) = (x_l + x_u)/2;
-        product = f(x_l)*f(x_r);
         
+        error = abs((x_r(2) - x_r(1))/x_r(2));
+        product = f(x_l)*f(x_r(2));
         
         if product < 0
-            x_u = x_r;
+            x_u = x_r(2);
+            continue
         elseif product > 0
-            x_l = x_r;
+            x_l = x_r(2);
+            continue
         else
-            x = x_r;
+            x = x_r(2);
             return
         end
         
-        error = abs((x_r(2) - x_r(1))/x_r(2));
+        
     end
     
-    x = x_r;
+    x = x_r(2);
 end
 
 function sol = solve_with_gauss_seidel(A, b, threshold)
@@ -101,7 +324,6 @@ function x = sum_abs(v)
     
     x = s;
 end
-
 
 function x = solve_with_cramer(A, b)
     [n, ~] = size(A);
